@@ -18,7 +18,7 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         //var facebookProfileUrl = "http://graph.facebook.com/\(userID)/picture?type=large"
-        // Do any additional setup after loading the view.
+//         Do any additional setup after loading the view.
     }
 
     @IBAction func facebookLogin(sender: UIButton) {
@@ -57,7 +57,8 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
         } else {
             loginManager.loginBehavior = FBSDKLoginBehavior.Browser
         }
-        FBSDKLoginManager().logInWithReadPermissions(["public_profile", "email"],fromViewController:self ,handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
+        loginManager.logOut()
+        FBSDKLoginManager().logInWithReadPermissions(["public_profile"],fromViewController:self ,handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
             if error != nil {
                 print("error")
             }else if(result.isCancelled){

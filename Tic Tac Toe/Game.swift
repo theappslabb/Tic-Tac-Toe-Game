@@ -187,11 +187,7 @@ class Game: UIViewController {
                         number = x[2] + 1
                     }
                 }
-            } else {
-//                let random = Int(arc4random_uniform(UInt32(count)))
-//                number = numbers[random] as! Int
             }
-            
         }
         if (run == false) {
             if userSteps[4] == 0 {

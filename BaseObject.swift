@@ -9,7 +9,6 @@
 import UIKit
 
 class BaseObject: NSObject {
-    //1
     class var sharedInstance: BaseObject {
         struct Singleton {
             static let instance = BaseObject()
