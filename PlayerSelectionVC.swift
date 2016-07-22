@@ -23,9 +23,9 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
 
     @IBAction func facebookLogin(sender: UIButton) {
         
-        BaseObject.sharedInstance.isComputerPlaying = false
+        BaseObject.sharedInstance.isComputerPlaying = true
         
-        let actionSheetController: UIAlertController = UIAlertController(title: "Use Profile Picture Instead of", message: "", preferredStyle: .ActionSheet)
+        let actionSheetController: UIAlertController = UIAlertController(title: "Use Profile Picture Instead of", message: "Note, this is a one player game", preferredStyle: .ActionSheet)
         
         let cancelActionButton: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
         }
@@ -35,7 +35,7 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
         { action -> Void in
             BaseObject.sharedInstance.customImage = true
             BaseObject.sharedInstance.isCircle = false
-            self.facebook()
+            self.onePlayerActionSheet()
         }
         actionSheetController.addAction(saveActionButton)
         
@@ -43,17 +43,20 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
         { action -> Void in
             BaseObject.sharedInstance.customImage = true
             BaseObject.sharedInstance.isCircle = true
-            self.facebook()
+            self.onePlayerActionSheet()
         }
         actionSheetController.addAction(deleteActionButton)
         self.presentViewController(actionSheetController, animated: true, completion: nil)
-    
-        
     }
     
     func facebook() -> Void {
         let loginManager = FBSDKLoginManager();
-        loginManager.loginBehavior = FBSDKLoginBehavior.Browser
+        let isInstalled = UIApplication.sharedApplication().canOpenURL(NSURL(string: "fb://")!)
+        if (isInstalled) {
+            loginManager.loginBehavior = FBSDKLoginBehavior.Native
+        } else {
+            loginManager.loginBehavior = FBSDKLoginBehavior.Browser
+        }
         FBSDKLoginManager().logInWithReadPermissions(["public_profile", "email"],fromViewController:self ,handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
             if error != nil {
                 print("error")
@@ -79,18 +82,92 @@ class PlayerSelectionVC: UIViewController, UIActionSheetDelegate {
     
     @IBAction func setUserNameForGame(sender: UIButton) {
         if userNameTxtField.text == "" {
-            let alert = UIAlertView.init(title: "ALert", message: "Enter Name", delegate: nil, cancelButtonTitle: "OK")
-            alert.show()
+            let alert = UIAlertController.init(title: "Error", message: "Please enter your username", preferredStyle: .Alert)
+            let ok = UIAlertAction.init(title: "OK", style: .Cancel, handler: { (alert : UIAlertAction) in
+                
+                }
+            )
+            alert.addAction(ok)
+            
+            //            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"Title"
+//            message:@"Message"
+//            preferredStyle:UIAlertControllerStyleAlert];
+//            
+//            UIAlertAction* yesButton = [UIAlertAction
+//            actionWithTitle:@"Yes, please"
+//            style:UIAlertActionStyleDefault
+//            handler:^(UIAlertAction * action) {
+//            //Handle your yes please button action here
+//            }];
+//            
+//            UIAlertAction* noButton = [UIAlertAction
+//            actionWithTitle:@"No, thanks"
+//            style:UIAlertActionStyleDefault
+//            handler:^(UIAlertAction * action) {
+//            //Handle no, thanks button
+//            }];
+//            
+//            [alert addAction:yesButton];
+//            [alert addAction:noButton];
+//            
+//            [self presentViewController:alert animated:YES completion:nil];
+//            let alert = UIAlertView.init(title: "ALert", message: "Enter Name", delegate: nil, cancelButtonTitle: "OK")
+            self.presentViewController(alert, animated: true, completion: nil)
         } else {
             BaseObject.sharedInstance.userName = userNameTxtField.text
         }
         
     }
     @IBAction func onePlayer(sender: UIButton) {
+        BaseObject.sharedInstance.customImage = false
         BaseObject.sharedInstance.isComputerPlaying = true
+        let actionSheetController: UIAlertController = UIAlertController(title: "iPhone is", message: "", preferredStyle: .ActionSheet)
+        
+        let cancelActionButton: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
+        }
+        actionSheetController.addAction(cancelActionButton)
+        
+        let saveActionButton: UIAlertAction = UIAlertAction(title: "Dumb", style: .Default)
+        { action -> Void in
+            BaseObject.sharedInstance.isDumb = true
+            self.pushViewController()
+        }
+        actionSheetController.addAction(saveActionButton)
+        
+        let deleteActionButton: UIAlertAction = UIAlertAction(title: "Smart", style: .Default)
+        { action -> Void in
+            BaseObject.sharedInstance.isDumb = false
+            self.pushViewController()
+        }
+        actionSheetController.addAction(deleteActionButton)
+        self.presentViewController(actionSheetController, animated: true, completion: nil)
+    }
+    func onePlayerActionSheet() {
+        let actionSheetController: UIAlertController = UIAlertController(title: "iPhone is", message: "", preferredStyle: .ActionSheet)
+        
+        let cancelActionButton: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
+        }
+        actionSheetController.addAction(cancelActionButton)
+        
+        let saveActionButton: UIAlertAction = UIAlertAction(title: "Dumb", style: .Default)
+        { action -> Void in
+            BaseObject.sharedInstance.isDumb = true
+            self.facebook()
+        }
+        actionSheetController.addAction(saveActionButton)
+        
+        let deleteActionButton: UIAlertAction = UIAlertAction(title: "Smart", style: .Default)
+        { action -> Void in
+            BaseObject.sharedInstance.isDumb = false
+            self.facebook()
+        }
+        actionSheetController.addAction(deleteActionButton)
+        self.presentViewController(actionSheetController, animated: true, completion: nil)
     }
     @IBAction func twoPlayer(sender: UIButton) {
+        BaseObject.sharedInstance.customImage = false
         BaseObject.sharedInstance.isComputerPlaying = false
+        pushViewController()
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
