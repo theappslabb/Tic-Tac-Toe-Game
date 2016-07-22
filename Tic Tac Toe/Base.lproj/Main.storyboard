@@ -33,7 +33,7 @@
                                 <rect key="frame" x="164" y="190" width="46" height="30"/>
                                 <state key="normal" title="Save"/>
                                 <connections>
-                                    <action selector="setUserNameForGame:" destination="nEh-dc-cCP" eventType="touchUpInside" id="pIe-ue-5jb"/>
+                                    <action selector="setUserNameForGame:" destination="nEh-dc-cCP" eventType="touchUpInside" id="DQO-c8-KCe"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Roj-oc-Xbv">
@@ -41,6 +41,13 @@
                                 <state key="normal" title="One Player"/>
                                 <connections>
                                     <action selector="onePlayer:" destination="nEh-dc-cCP" eventType="touchUpInside" id="Kbj-Ot-RAX"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pY4-69-wRY">
+                                <rect key="frame" x="129" y="508" width="118" height="30"/>
+                                <state key="normal" title="Facbook Login"/>
+                                <connections>
+                                    <action selector="facebookLogin:" destination="nEh-dc-cCP" eventType="touchUpInside" id="GFb-89-cu0"/>
                                 </connections>
                             </button>
                         </subviews>

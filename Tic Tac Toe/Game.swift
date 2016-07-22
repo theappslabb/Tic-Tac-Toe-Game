@@ -20,9 +20,26 @@ class Game: UIViewController {
     
     var winner = ""
     
+    var circleImage : UIImage!
+    
+    var crossImage : UIImage!
+    
     override func viewDidLoad() {
-        userSteps = [0,0,0,0,0,0,0,0,0]
         super.viewDidLoad()
+        userSteps = [0,0,0,0,0,0,0,0,0]
+        if (BaseObject.sharedInstance.customImage == true) {
+            if (BaseObject.sharedInstance.isCircle == true) {
+                circleImage = BaseObject.sharedInstance.image
+                crossImage = UIImage(named: "Cross.png")
+            } else {
+                circleImage = UIImage(named: "Circle.png")
+                crossImage = BaseObject.sharedInstance.image
+            }
+        } else {
+            circleImage = UIImage(named: "Circle.png")
+            crossImage = UIImage(named: "Cross.png")
+        }
+        
         // Do any additional setup after loading the view.
     }
     
@@ -35,10 +52,9 @@ class Game: UIViewController {
     }
     
     func switchImage(button:UIButton) -> Void {
-        let crossImage = UIImage(named: "Cross.png")
         if (userSteps[button.tag - 1] == 0) {
             if (now == 1) {
-                button.setBackgroundImage(UIImage(named: "Circle.png"), forState: UIControlState.Normal)
+                button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
                 userSteps[button.tag - 1] = 1;
                 now = 2
             } else {
@@ -88,15 +104,14 @@ class Game: UIViewController {
         }
         let button = gameView.viewWithTag(randomNumber+1) as! UIButton
         if (now == 1) {
-            button.setBackgroundImage(UIImage(named: "Circle.png"), forState: UIControlState.Normal)
+            button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
             userSteps[randomNumber] = 1;
             now = 2
         } else {
-            button.setBackgroundImage(UIImage(named: "Cross.png"), forState: UIControlState.Normal)
+            button.setBackgroundImage(crossImage, forState: UIControlState.Normal)
             userSteps[randomNumber] = 2;
             now = 1
         }
-        
         checkWinnig()
     }
     func showRedLine() -> Void {

@@ -16,6 +16,12 @@ class BaseObject: NSObject {
         }
         return Singleton.instance
     }
+    var image : UIImage!
+    let url = "http://graph.facebook.com/userID/picture?type=large"
+    var customImage : Bool!
+    var isCircle : Bool!
     var isComputerPlaying : Bool!
     var userName : String!
+    var userData : NSMutableDictionary!
+    
 }
