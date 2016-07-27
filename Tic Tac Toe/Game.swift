@@ -22,6 +22,8 @@ class Game: UIViewController {
     
     var winner = ""
     
+    var disabled = false;
+    
     var circleImage : UIImage!
     
     var crossImage : UIImage!
@@ -52,7 +54,9 @@ class Game: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     @IBAction func userPressed(sender: UIButton) {
-        switchImage(sender)
+        if !disabled {
+            switchImage(sender)
+        }
     }
     
     func switchImage(button:UIButton) -> Void {
@@ -70,6 +74,7 @@ class Game: UIViewController {
                 
             } else {
                 if ((BaseObject.sharedInstance.isComputerPlaying) == true) {
+                    disabled = true
                     if (BaseObject.sharedInstance.isDumb == true) {
                         self.performSelector(#selector(Game.ComputersTurnDumb), withObject: nil, afterDelay: 2.0)
                     } else{
@@ -80,136 +85,164 @@ class Game: UIViewController {
         }
     }
     func checkWinnig() -> Bool {
-        var gameOver = false
-        for internalArray in winnigArray {
-            let zero = internalArray[0];
-            let first = internalArray[1];
-            let second = internalArray[2];
-            if (userSteps[zero] != 0 && userSteps[zero] == userSteps[first] && userSteps[first] == userSteps[second]) {
-                if userSteps[zero] == 1 {
-                    winner = "CIRCLE"
-                    gameOver = true
-                    resultLabel.text = "CIRCLE WON"
-                    break
-                } else {
-                    winner = "CROSS"
-                    gameOver = true
-                    resultLabel.text = "CROSS WON"
-                    break
+        if winner == "" {
+            var gameOver = false
+            for internalArray in winnigArray {
+                let zero = internalArray[0];
+                let first = internalArray[1];
+                let second = internalArray[2];
+                if (userSteps[zero] != 0 && userSteps[zero] == userSteps[first] && userSteps[first] == userSteps[second]) {
+                    if userSteps[zero] == 1 {
+                        winner = "CIRCLE"
+                        gameOver = true
+                        resultLabel.text = "CIRCLE WON"
+                        break
+                    } else {
+                        winner = "CROSS"
+                        gameOver = true
+                        resultLabel.text = "CROSS WON"
+                        break
+                    }
                 }
             }
+            if gameOver {
+                Disable()
+            }
+            if gameComplete() {
+                Disable()
+                resultLabel.text = "DRAW"
+            }
+            return gameOver
+        } else {
+            return true
         }
-        if gameOver {
-            Disable()
-        }
-        if gameComplete() {
-            Disable()
-            resultLabel.text = "DRAW"
-        }
-        return gameOver
     }
     func ComputersTurnDumb() -> Void {
-        var execute = false
-        var randomNumber = Int(arc4random_uniform(8))
-        while (execute == false) {
-            if userSteps[randomNumber] == 0 {
-                execute = true
-            } else {
-                randomNumber = Int(arc4random_uniform(8))
+        if winner == "" {
+            var execute = false
+            var anySpace = true
+            var randomNumber = Int(arc4random_uniform(8))
+            for num in userSteps {
+                if num == 0 {
+                    anySpace = true
+                    break
+                }
+                else {
+                    anySpace = false;
+                }
             }
+            while (execute == false) {
+                if userSteps[randomNumber] == 0 {
+                    execute = true
+                } else {
+                    if anySpace {
+                        randomNumber = Int(arc4random_uniform(8))
+                    } else {
+                        execute = true
+                    }
+                }
+            }
+            
+                let button = gameView.viewWithTag(randomNumber+1) as! UIButton
+                if (now == 1) {
+                    button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
+                    userSteps[randomNumber] = 1;
+                    now = 2
+                } else {
+                    button.setBackgroundImage(crossImage, forState: UIControlState.Normal)
+                    userSteps[randomNumber] = 2;
+                    now = 1
+                }
+                checkWinnig()
+            
         }
-        let button = gameView.viewWithTag(randomNumber+1) as! UIButton
-        if (now == 1) {
-            button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
-            userSteps[randomNumber] = 1;
-            now = 2
-        } else {
-            button.setBackgroundImage(crossImage, forState: UIControlState.Normal)
-            userSteps[randomNumber] = 2;
-            now = 1
-        }
-        checkWinnig()
+        disabled = false
     }
     func ComputersTurnSmart() -> Void {
-        var run = false
-        let indexValues = NSMutableArray()
-        let numbers = NSMutableArray()
-        var count = 0
-        var number = 0
-        var o = 0
-        for (o = 0 ;o < winnigArray.count;o += 1) {
-            let internalArray = winnigArray[o]
-            let zero = internalArray[0];
-            let first = internalArray[1];
-            let second = internalArray[2];
-            if (userSteps[zero] != 0 && userSteps[zero] == userSteps[first]) {
-                if (userSteps[second] == 0) {
-                    number = second + 1
-                    run = true
-                    indexValues.addObject(o)
-                    numbers.addObject(number)
-                    count += 1
+        if winner == "" {
+            var run = false
+            let indexValues = NSMutableArray()
+            let numbers = NSMutableArray()
+            var count = 0
+            var number = 0
+            var o = 0
+            for (o = 0 ;o < winnigArray.count;o += 1) {
+                let internalArray = winnigArray[o]
+                let zero = internalArray[0];
+                let first = internalArray[1];
+                let second = internalArray[2];
+                if (userSteps[zero] != 0 && userSteps[zero] == userSteps[first]) {
+                    if (userSteps[second] == 0) {
+                        number = second + 1
+                        run = true
+                        indexValues.addObject(o)
+                        numbers.addObject(number)
+                        count += 1
+                    }
+                } else if (userSteps[zero] != 0 && userSteps[zero] == userSteps[second]) {
+                    if (userSteps[first] == 0) {
+                        number = first + 1
+                        run = true
+                        indexValues.addObject(o)
+                        numbers.addObject(number)
+                        count += 1
+                    }
+                } else if (userSteps[first] != 0 && userSteps[first] == userSteps[second]) {
+                    if (userSteps[zero] == 0) {
+                        number = zero + 1
+                        run = true
+                        indexValues.addObject(o)
+                        numbers.addObject(number)
+                        count += 1
+                    }
                 }
-            } else if (userSteps[zero] != 0 && userSteps[zero] == userSteps[second]) {
-                if (userSteps[first] == 0) {
-                    number = first + 1
-                    run = true
-                    indexValues.addObject(o)
-                    numbers.addObject(number)
-                    count += 1
-                }
-            } else if (userSteps[first] != 0 && userSteps[first] == userSteps[second]) {
-                if (userSteps[zero] == 0) {
-                    number = zero + 1
-                    run = true
-                    indexValues.addObject(o)
-                    numbers.addObject(number)
-                    count += 1
+                if count > 1 {
+                    var x = winnigArray[indexValues[0] as! Int]
+                    if userSteps[x[0]] == 2 || userSteps[x[1]] == 2 || userSteps[x[2]] == 2 {
+                        if (userSteps[x[0]] == 0) {
+                            number = x[0] + 1
+                        } else if (userSteps[x[1]] == 0) {
+                            number = x[1] + 1
+                        } else if (userSteps[x[2]] == 0) {
+                            number = x[2] + 1
+                        }
+                    } else {
+                        x = winnigArray[indexValues[1] as! Int]
+                        if (userSteps[x[0]] == 0) {
+                            number = x[0] + 1
+                        } else if (userSteps[x[1]] == 0) {
+                            number = x[1] + 1
+                        } else if (userSteps[x[2]] == 0) {
+                            number = x[2] + 1
+                        }
+                    }
                 }
             }
-            if count > 1 {
-                var x = winnigArray[indexValues[0] as! Int]
-                if userSteps[x[0]] == 2 || userSteps[x[1]] == 2 || userSteps[x[2]] == 2 {
-                    if (userSteps[x[0]] == 0) {
-                        number = x[0] + 1
-                    } else if (userSteps[x[1]] == 0) {
-                        number = x[1] + 1
-                    } else if (userSteps[x[2]] == 0) {
-                        number = x[2] + 1
-                    }
+            if (run == false) {
+                if userSteps[4] == 0 {
+                    run = true
+                    number = 5
                 } else {
-                    x = winnigArray[indexValues[1] as! Int]
-                    if (userSteps[x[0]] == 0) {
-                        number = x[0] + 1
-                    } else if (userSteps[x[1]] == 0) {
-                        number = x[1] + 1
-                    } else if (userSteps[x[2]] == 0) {
-                        number = x[2] + 1
+                    if winner == "" {
+                        ComputersTurnDumb()
                     }
                 }
             }
-        }
-        if (run == false) {
-            if userSteps[4] == 0 {
-                run = true
-                number = 5
-            } else {
-                ComputersTurnDumb()
+            if run == true {
+                let button = gameView.viewWithTag(number) as! UIButton
+                if (now == 1) {
+                    button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
+                    userSteps[number-1] = 1;
+                    now = 2
+                } else {
+                    button.setBackgroundImage(crossImage, forState: UIControlState.Normal)
+                    userSteps[number-1] = 2;
+                    now = 1
+                }
+                checkWinnig()
             }
         }
-        if run == true {
-            let button = gameView.viewWithTag(number) as! UIButton
-            if (now == 1) {
-                button.setBackgroundImage(circleImage, forState: UIControlState.Normal)
-                userSteps[number-1] = 1;
-                now = 2
-            } else {
-                button.setBackgroundImage(crossImage, forState: UIControlState.Normal)
-                userSteps[number-1] = 2;
-                now = 1
-            }
-            checkWinnig()
-        }
+        disabled = false
     }
     func ShowRedLine() -> Void {
         
